@@ -42,3 +42,7 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Inside your dev-hub/ folder, open .gitignore and add:
+src/environments/environment.ts
+src/environments/environment.prod.ts
