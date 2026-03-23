@@ -24,3 +24,8 @@ export const appConfig: ApplicationConfig = {
 
   ]
 };
+
+// provideAuth0- registers the Auth0 Service.
+// provideHttpClient- registers the HttpClient Service and adds the authHttpInterceptorFn to the interceptor chain. 
+// authHttpInterceptorFn: This interceptor adds the access token (JWT Token) to outgoing HTTP requests when required.
+
