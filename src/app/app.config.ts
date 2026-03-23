@@ -1,6 +1,6 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient} from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { withInterceptors } from '@angular/common/http';
@@ -17,7 +17,7 @@ export const appConfig: ApplicationConfig = {
     provideAuth0({
       domain: environment.auth.domain,
       clientId: environment.auth.clientId,
-      authorizationParams:{
+      authorizationParams: {
         redirect_uri: environment.auth.redirectUri
         // redirect_uri: where to comeback afetr login(localhost:4200).
       }
