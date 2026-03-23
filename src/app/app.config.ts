@@ -10,15 +10,16 @@ import { authHttpInterceptorFn } from '@auth0/auth0-angular';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(),
-    provideRouter(routes), 
-    provideClientHydration(withEventReplay()),
+    provideBrowserGlobalErrorListeners(), // acts like a CCTV and catches any unexpected errors happening in the browser and logs them.
+    provideRouter(routes), // "page navigation": tells what compoents to load when the user navigates to a specific URL.
+    provideClientHydration(withEventReplay()), //SSR, makes the page load faster.withEventReplay(): remembers any action the user did before the app fully loads.
     provideHttpClient(withInterceptors([authHttpInterceptorFn])),
     provideAuth0({
       domain: environment.auth.domain,
       clientId: environment.auth.clientId,
       authorizationParams:{
         redirect_uri: environment.auth.redirectUri
+        // redirect_uri: where to comeback afetr login(localhost:4200).
       }
     }),
 
@@ -26,6 +27,7 @@ export const appConfig: ApplicationConfig = {
 };
 
 // provideAuth0- registers the Auth0 Service.
-// provideHttpClient- registers the HttpClient Service and adds the authHttpInterceptorFn to the interceptor chain. 
-// authHttpInterceptorFn: This interceptor adds the access token (JWT Token) to outgoing HTTP requests when required.
+// provideHttpClient-enables making API Calls.
+// authHttpInterceptorFn:This interceptor adds the access token (JWT Token) to outgoing HTTP requests when required.
+//                      : automatically attach "login token" tp every API request.
 
