@@ -1,25 +1,26 @@
 import { Routes } from '@angular/router';
-import { AuthGuard } from '@auth0/auth0-angular';
+import { authGuardFn } from '@auth0/auth0-angular'; 
+
 export const routes: Routes = [
-    {
-        path: '',
-        redirectTo: 'login',
-        pathMatch: 'full'
-
-    },
-    {
-        path: 'login',
-        loadComponent: () => //lazy loading
-            import('./login/login.component').then((m) => m.LoginComponent)
-
-    },
-
-    {
-        path: 'dashboard',
-        canActivate: [AuthGuard],
-        loadComponent: () =>
-            import('./dashboard/dashboard.component').then((m) => m.DashboardComponent)
-    }
-
-
+  {
+    path: '',
+    redirectTo: 'login',
+    pathMatch: 'full'
+  },
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./login/login').then((m) => m.Login)
+  },
+  {
+    path: 'dashboard',
+    canActivate: [authGuardFn],   
+    loadComponent: () =>
+      import('./dashboard/dashboard').then((m) => m.Dashboard)
+  },
+  {
+    path: 'callback',
+    loadComponent: () =>
+      import('./callback/callback').then(m => m.Callback)
+  }
 ];
