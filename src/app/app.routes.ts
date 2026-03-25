@@ -12,6 +12,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./login/login').then((m) => m.Login)
   },
+  // added Route Guard to protect the dashboard route, only authenticated users can access it. If an unauthenticated user tries to access the dashboard, they will be redirected to the login page.
   {
     path: 'dashboard',
     canActivate: [authGuardFn],   
