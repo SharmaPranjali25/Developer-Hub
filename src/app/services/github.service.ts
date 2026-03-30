@@ -28,7 +28,7 @@ getIssues(
     // observe: 'response' tells HttpClient to give us the FULL HTTP response
     return this.http.get<Issue[]>(
       `${this.BASE_URL}/repos/${owner}/${repo}/issues?state=open&page=${page}&per_page=30`,
-      { observe: 'response' }
+      { observe: 'response' } //in httpResponse we want header too.
     ).pipe(
       // .pipe(map(...)) transforms the raw HTTP response into our
       // PaginatedResult shape before the component receives it
@@ -78,3 +78,21 @@ getIssues(
 
 
 }
+
+// Issue = the interface you defined in github.models.ts
+//`getRepos(owner: string)` — a method that accepts one parameter called `owner` which must be a string. When you call it: `getRepos('microsoft')` — the word `microsoft` becomes `owner` inside the method.
+
+//`: Observable<Repo[]>` — this is the return type annotation. It tells TypeScript and any developer reading this: "this method returns an Observable that will eventually deliver an array of Repo objects." 
+//The `: ` before `Observable` is TypeScript's way of annotating types on anything — variables, parameters, return values.
+
+
+// Component calls:
+// github.getIssues('microsoft', 'vscode', 1)
+//          ↓
+// GithubService builds the URL and calls GitHub's API
+//          ↓
+// GitHub responds with JSON + Link header
+//          ↓
+// .pipe(map(...)) transforms it into PaginatedResult<Issue>
+//          ↓
+// Component receives clean typed data and renders the UI
