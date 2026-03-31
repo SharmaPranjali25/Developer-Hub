@@ -1,1 +1,36 @@
-<p>issue-list works!</p>
+<div class="issues-list">
+  <div class="issue-card" *ngFor="let issue of issues">
+
+    <div class="issue-icon" [class.pr]="isPullRequest(issue)">
+      <span *ngIf="!isPullRequest(issue)">●</span>
+      <span *ngIf="isPullRequest(issue)">⑂</span>
+    </div>
+
+    <div class="issue-body">
+      <div class="issue-title-row">
+        <a class="issue-title" [href]="issue.html_url" target="_blank">
+          {{ issue.title }}
+        </a>
+        <span
+          class="label"
+          *ngFor="let label of issue.labels"
+          [style.background]="'#' + label.color + '33'"
+          [style.color]="'#' + label.color">
+          {{ label.name }}
+        </span>
+      </div>
+      <div class="issue-meta">
+        <span>#{{ issue.number }}</span>
+        <span>opened {{ timeAgo(issue.created_at) }}</span>
+        <span *ngIf="issue.user">by {{ issue.user.login }}</span>
+      </div>
+    </div>
+
+    <div class="issue-right">
+      <span class="comment-count" *ngIf="issue.comments > 0">
+        💬 {{ issue.comments }}
+      </span>
+    </div>
+
+  </div>
+</div>

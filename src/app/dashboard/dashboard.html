@@ -2,68 +2,66 @@
 
   <!-- ── SIDEBAR ─────────────────────────────────── -->
   <aside class="sidebar">
-
     <div class="sidebar-logo">
       <div class="logo-icon">DH</div>
       <span class="logo-text">Dev Hub</span>
+      <span class="logo-beta">beta</span>
     </div>
 
     <nav class="sidebar-nav">
-      <div class="nav-label">Overview</div>
-
+      <div class="nav-label">OVERVIEW</div>
       <div class="nav-item active">
-        <span class="nav-icon">▦</span>
         Dashboard
-        <span class="nav-count">{{ openCount }}</span>
+        <span class="nav-count">{{ allIssues.length }}</span>
       </div>
-
       <div class="nav-item">
-        <span class="nav-icon">◎</span>
         Issues
         <span class="nav-count alert">{{ openCount }}</span>
       </div>
-
       <div class="nav-item">
-        <span class="nav-icon">⑂</span>
         Pull Requests
         <span class="nav-count">{{ prCount }}</span>
       </div>
-    </nav>
 
+      <div class="nav-label" style="margin-top:16px">ACTIVITY</div>
+      <div class="nav-item">Recent</div>
+      <div class="nav-item">Assigned to me</div>
+
+      <div class="nav-label" style="margin-top:16px">REPOSITORIES</div>
+      <div class="repo-list">
+        <div class="repo-item" *ngFor="let repo of repos">
+          <span class="repo-dot"></span>
+          <span class="repo-name">{{ repo.name }}</span>
+          <span class="repo-count">{{ repo.open_issues_count }}</span>
+        </div>
+      </div>
+    </nav>
   </aside>
 
-  <!-- ── MAIN CONTENT ────────────────────────────── -->
+  <!-- ── MAIN ───────────────────────────────────── -->
   <main class="main-content">
 
-    <!-- Top bar -->
+    <!-- Topbar -->
     <header class="topbar">
       <span class="topbar-title">
         {{ environment.github.defaultOrg }}
         <span class="topbar-slash">/</span>
         Dashboard
       </span>
-
       <div class="topbar-right">
-
-        <!-- Auth pill — shows "Signed in via Auth0" -->
         <div class="auth-pill">
           <span class="auth-dot"></span>
           Signed in via Auth0
         </div>
-
-        <!-- User avatar using async pipe to read user$ Observable -->
         <ng-container *ngIf="user$ | async as user">
           <div class="avatar" [title]="user.name ?? ''">
             {{ (user.name ?? 'U')[0].toUpperCase() }}
           </div>
         </ng-container>
-
         <button class="logout-btn" (click)="logout()">Sign out</button>
-
       </div>
     </header>
 
-    <!-- Page content -->
     <div class="content">
 
       <!-- Stats row -->
@@ -71,87 +69,78 @@
         <div class="stat-card">
           <div class="stat-label">Open issues</div>
           <div class="stat-value">{{ openCount }}</div>
+          <div class="stat-sub green">+{{ openCount }} total</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Open PRs</div>
           <div class="stat-value">{{ prCount }}</div>
+          <div class="stat-sub blue">{{ prCount }} need review</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Closed</div>
           <div class="stat-value">{{ closedCount }}</div>
+          <div class="stat-sub gray">this fetch</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Total fetched</div>
           <div class="stat-value">{{ allIssues.length }}</div>
+          <div class="stat-sub gray">from API</div>
         </div>
       </div>
 
-      <!-- Section header -->
+      <!-- List header -->
       <div class="section-header">
-        <span class="section-title">Issues & Pull Requests</span>
+        <span class="section-title">Issues &amp; Pull Requests</span>
+        <a class="view-all"
+           [href]="'https://github.com/' + environment.github.defaultOrg"
+           target="_blank">
+          View all →
+        </a>
       </div>
 
-      <!-- Filter buttons -->
+      <!-- Filters -->
       <div class="filters-row">
-
-        <!-- (click) calls setFilter() in the .ts file         -->
-        <!-- [class.active] adds the "active" CSS class        -->
-        <!-- when the expression is true                        -->
-        <button
-          class="filter-btn"
+        <button class="filter-btn"
           [class.active]="activeFilter === 'open'"
           (click)="setFilter('open')">
-          Open <span class="filter-count">{{ openCount }}</span>
+          Open
+          <span class="filter-count">{{ openCount }}</span>
         </button>
-
-        <button
-          class="filter-btn"
+        <button class="filter-btn"
           [class.active]="activeFilter === 'closed'"
           (click)="setFilter('closed')">
-          Closed <span class="filter-count">{{ closedCount }}</span>
+          Closed
+          <span class="filter-count">{{ closedCount }}</span>
         </button>
-
-        <button
-          class="filter-btn"
+        <button class="filter-btn"
           [class.active]="activeFilter === 'pr'"
           (click)="setFilter('pr')">
-          Pull Requests <span class="filter-count">{{ prCount }}</span>
+          Pull Requests
+          <span class="filter-count">{{ prCount }}</span>
         </button>
-
       </div>
 
-      <!-- Loading state -->
+      <!-- Loading -->
       <div class="loading" *ngIf="isLoading && allIssues.length === 0">
         Loading issues...
       </div>
 
       <!-- Issue list -->
-      <!-- *ngIf hides this section while loading for the first time -->
       <div *ngIf="!isLoading || allIssues.length > 0">
-
-        <!-- Empty state — shown when filter returns nothing -->
         <div class="empty-state" *ngIf="filteredIssues.length === 0">
           No {{ activeFilter }} items found.
         </div>
-
-        <!-- The issue list component — we pass it the filtered issues -->
-        <!-- [issues]="filteredIssues" is property binding:            -->
-        <!-- it sets the "issues" @Input() on IssueListComponent       -->
         <app-issue-list
           *ngIf="filteredIssues.length > 0"
           [issues]="filteredIssues">
         </app-issue-list>
-
-        <!-- Load more button — only shows if more pages exist -->
         <div class="load-more-row" *ngIf="hasNextPage">
           <button class="load-more-btn" (click)="loadMore()">
             {{ isLoading ? 'Loading...' : 'Load more' }}
           </button>
         </div>
-
       </div>
 
     </div>
   </main>
-
 </div>

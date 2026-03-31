@@ -1,19 +1,19 @@
+import { environment } from '../../environments/environment';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '@auth0/auth0-angular';
 import { Observable } from 'rxjs';
 import { GithubService } from '../services/github.service';
 import { Issue } from '../models/github.models';
-import { environment } from '../../environments/environment';
-import { IssueList } from '../issue-list/issue-list';
+import { IssueListComponent } from '../issue-list/issue-list';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
     CommonModule,
-    IssueList
-  ],
+    IssueListComponent
+],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
@@ -31,13 +31,15 @@ export class DashboardComponent implements OnInit {
 
   // ── User info from Auth0 ──────────────────────────────────────
   user$: Observable<any>;
+  protected environment = environment; // ✅ correct way
+repos: any;
 
   // ── Inject services ───────────────────────────────────────────
   constructor(
     private github: GithubService,
     private auth: AuthService
   ) {
-    this.user$ = this.auth.user$; // ✅ auth is available here
+    this.user$ = this.auth.user$;
   }
 
   // ── ngOnInit ──────────────────────────────────────────────────
@@ -51,7 +53,7 @@ export class DashboardComponent implements OnInit {
 
     this.github.getIssues(
       environment.github.defaultOrg,
-      'YOUR_REPO_NAME',
+      'Developer-Hub',
       page
     ).subscribe({
       next: (result) => {
