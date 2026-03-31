@@ -3,19 +3,30 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { Issue, PullRequest, Repo , PaginatedResult} from '../models/github.models';
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class GithubService {
     private readonly BASE_URL = 'https://api.github.com';
+    // Add this inside the GithubService class, before the constructor
+private getHeaders(): { headers: HttpHeaders } {
+  return {
+    headers: new HttpHeaders({
+      'Authorization': `Bearer ${environment.github.token}`,
+      'Accept': 'application/vnd.github.v3+json'
+    })
+  };
+}
     constructor(private http: HttpClient){}
     //---- Get all repositories for an organisation-----
     // this URL will list alll repos for this user/org, show most recently updated first, return 20 repos per page.
     getRepos(owner: string):Observable<Repo[]>{
         return this.http.get<Repo[]>(
-            `${this.BASE_URL}/users/${owner}/repos?sort=updated&per_page=20`
-        );
+    `${this.BASE_URL}/users/${owner}/repos?sort=updated&per_page=20`,
+    this.getHeaders()
+);
 }
 
 // ---get issues for specific repo---
@@ -26,10 +37,10 @@ getIssues(
   ): Observable<PaginatedResult<Issue>> {
 
     // observe: 'response' tells HttpClient to give us the FULL HTTP response
-    return this.http.get<Issue[]>(
-      `${this.BASE_URL}/repos/${owner}/${repo}/issues?state=open&page=${page}&per_page=30`,
-      { observe: 'response' } //in httpResponse we want header too.
-    ).pipe(
+   return this.http.get<Issue[]>(
+    `${this.BASE_URL}/repos/${owner}/${repo}/issues?state=open&page=${page}&per_page=30`,
+    { observe: 'response', ...this.getHeaders() }
+).pipe(
       // .pipe(map(...)) transforms the raw HTTP response into our
       // PaginatedResult shape before the component receives it
       map((response: HttpResponse<Issue[]>) => {
@@ -52,10 +63,10 @@ getIssues(
     page: number = 1
   ): Observable<PaginatedResult<PullRequest>> {
 
-    return this.http.get<PullRequest[]>(
-      `${this.BASE_URL}/repos/${owner}/${repo}/pulls?state=open&page=${page}&per_page=30`,
-      { observe: 'response' }
-    ).pipe(
+   return this.http.get<PullRequest[]>(
+    `${this.BASE_URL}/repos/${owner}/${repo}/pulls?state=open&page=${page}&per_page=30`,
+    { observe: 'response', ...this.getHeaders() }
+).pipe(
       map((response: HttpResponse<PullRequest[]>) => {
         const prs = response.body ?? [];
         const linkHeader = response.headers.get('Link') ?? '';
@@ -72,8 +83,9 @@ getIssues(
   // get single repo details
    getRepo(owner: string, repo: string): Observable<Repo> {
     return this.http.get<Repo>(
-      `${this.BASE_URL}/repos/${owner}/${repo}`
-    );
+    `${this.BASE_URL}/repos/${owner}/${repo}`,
+    this.getHeaders()
+);
   }
 
 
