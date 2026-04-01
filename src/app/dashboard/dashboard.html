@@ -1,6 +1,5 @@
 <div class="app-shell">
 
-  <!-- ── SIDEBAR ─────────────────────────────────── -->
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="logo-icon">DH</div>
@@ -10,6 +9,11 @@
 
     <nav class="sidebar-nav">
       <div class="nav-label">OVERVIEW</div>
+
+      <div class="nav-item" *ngIf="selectedRepo" (click)="backToRepos()">
+        ← Back to Repos
+      </div>
+
       <div class="nav-item active">
         Dashboard
         <span class="nav-count">{{ allIssues.length }}</span>
@@ -29,7 +33,11 @@
 
       <div class="nav-label" style="margin-top:16px">REPOSITORIES</div>
       <div class="repo-list">
-        <div class="repo-item" *ngFor="let repo of repos">
+        <div
+          class="repo-item"
+          *ngFor="let repo of repos; trackBy: trackByRepo"
+          [class.selected]="selectedRepo?.name === repo.name"
+          (click)="selectRepo(repo)">
           <span class="repo-dot"></span>
           <span class="repo-name">{{ repo.name }}</span>
           <span class="repo-count">{{ repo.open_issues_count }}</span>
@@ -38,15 +46,13 @@
     </nav>
   </aside>
 
-  <!-- ── MAIN ───────────────────────────────────── -->
   <main class="main-content">
 
-    <!-- Topbar -->
     <header class="topbar">
       <span class="topbar-title">
         {{ environment.github.defaultOrg }}
         <span class="topbar-slash">/</span>
-        Dashboard
+        {{ selectedRepo ? selectedRepo.name : 'Dashboard' }}
       </span>
       <div class="topbar-right">
         <div class="auth-pill">
@@ -64,80 +70,164 @@
 
     <div class="content">
 
-      <!-- Stats row -->
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-label">Open issues</div>
-          <div class="stat-value">{{ openCount }}</div>
-          <div class="stat-sub green">+{{ openCount }} total</div>
+      <!-- VIEW 1: REPO GRID -->
+      <div *ngIf="!selectedRepo">
+
+        <div class="loading" *ngIf="isLoadingRepos">
+          Loading repositories...
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Open PRs</div>
-          <div class="stat-value">{{ prCount }}</div>
-          <div class="stat-sub blue">{{ prCount }} need review</div>
+
+        <!-- Error state — shows if token is bad or repos not found -->
+        <div class="error-state" *ngIf="loadError">
+          {{ loadError }}
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Closed</div>
-          <div class="stat-value">{{ closedCount }}</div>
-          <div class="stat-sub gray">this fetch</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Total fetched</div>
-          <div class="stat-value">{{ allIssues.length }}</div>
-          <div class="stat-sub gray">from API</div>
+
+        <div *ngIf="!isLoadingRepos && !loadError">
+
+          <div class="section-header">
+            <span class="section-title">Your Repositories</span>
+            <span class="repo-page-info">
+              Page {{ currentRepoPage + 1 }} of {{ repoPages.length }}
+            </span>
+          </div>
+
+          <div class="repos-grid">
+            <div
+              class="repo-card"
+              *ngFor="let repo of currentPageRepos; trackBy: trackByRepo"
+              (click)="selectRepo(repo)">
+
+              <div class="repo-card-header">
+                <span class="repo-card-name">{{ repo.name }}</span>
+                <span class="repo-private-badge" *ngIf="repo.private">
+                  private
+                </span>
+              </div>
+
+              <p class="repo-card-desc">
+                {{ repo.description || 'No description' }}
+              </p>
+
+              <div class="repo-card-footer">
+                <span class="repo-card-lang" *ngIf="repo.language">
+                  {{ repo.language }}
+                </span>
+                <span class="repo-card-issues">
+                  {{ repo.open_issues_count }} open issues
+                </span>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="repo-pagination" *ngIf="repoPages.length > 1">
+            <button
+              class="page-btn"
+              [disabled]="currentRepoPage === 0"
+              (click)="prevRepoPage()">
+              ← Previous
+            </button>
+            <span class="page-dots">
+              <span
+                *ngFor="let page of repoPages; let i = index"
+                class="page-dot"
+                [class.active]="i === currentRepoPage">
+              </span>
+            </span>
+            <button
+              class="page-btn"
+              [disabled]="currentRepoPage === repoPages.length - 1"
+              (click)="nextRepoPage()">
+              Next →
+            </button>
+          </div>
+
         </div>
       </div>
 
-      <!-- List header -->
-      <div class="section-header">
-        <span class="section-title">Issues &amp; Pull Requests</span>
-        <a class="view-all"
-           [href]="'https://github.com/' + environment.github.defaultOrg"
-           target="_blank">
-          View all →
-        </a>
-      </div>
+      <!-- VIEW 2: ISSUE DASHBOARD -->
+      <div *ngIf="selectedRepo">
 
-      <!-- Filters -->
-      <div class="filters-row">
-        <button class="filter-btn"
-          [class.active]="activeFilter === 'open'"
-          (click)="setFilter('open')">
-          Open
-          <span class="filter-count">{{ openCount }}</span>
+        <button class="back-btn" (click)="backToRepos()">
+          ← Back to repositories
         </button>
-        <button class="filter-btn"
-          [class.active]="activeFilter === 'closed'"
-          (click)="setFilter('closed')">
-          Closed
-          <span class="filter-count">{{ closedCount }}</span>
-        </button>
-        <button class="filter-btn"
-          [class.active]="activeFilter === 'pr'"
-          (click)="setFilter('pr')">
-          Pull Requests
-          <span class="filter-count">{{ prCount }}</span>
-        </button>
-      </div>
 
-      <!-- Loading -->
-      <div class="loading" *ngIf="isLoading && allIssues.length === 0">
-        Loading issues...
-      </div>
-
-      <!-- Issue list -->
-      <div *ngIf="!isLoading || allIssues.length > 0">
-        <div class="empty-state" *ngIf="filteredIssues.length === 0">
-          No {{ activeFilter }} items found.
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Open issues</div>
+            <div class="stat-value">{{ openCount }}</div>
+            <div class="stat-sub green">in {{ selectedRepo.name }}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Open PRs</div>
+            <div class="stat-value">{{ prCount }}</div>
+            <div class="stat-sub blue">need review</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Closed</div>
+            <div class="stat-value">{{ closedCount }}</div>
+            <div class="stat-sub gray">this fetch</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total fetched</div>
+            <div class="stat-value">{{ allIssues.length }}</div>
+            <div class="stat-sub gray">from API</div>
+          </div>
         </div>
-        <app-issue-list
-          *ngIf="filteredIssues.length > 0"
-          [issues]="filteredIssues">
-        </app-issue-list>
-        <div class="load-more-row" *ngIf="hasNextPage">
-          <button class="load-more-btn" (click)="loadMore()">
-            {{ isLoading ? 'Loading...' : 'Load more' }}
+
+        <div class="section-header">
+          <span class="section-title">Issues &amp; Pull Requests</span>
+          <a
+            class="view-all"
+            [href]="'https://github.com/' + environment.github.defaultOrg + '/' + selectedRepo.name + '/issues'"
+            target="_blank">
+            View on GitHub →
+          </a>
+        </div>
+
+        <div class="filters-row">
+          <button class="filter-btn"
+            [class.active]="activeFilter === 'open'"
+            (click)="setFilter('open')">
+            Open <span class="filter-count">{{ openCount }}</span>
           </button>
+          <button class="filter-btn"
+            [class.active]="activeFilter === 'closed'"
+            (click)="setFilter('closed')">
+            Closed <span class="filter-count">{{ closedCount }}</span>
+          </button>
+          <button class="filter-btn"
+            [class.active]="activeFilter === 'pr'"
+            (click)="setFilter('pr')">
+            Pull Requests <span class="filter-count">{{ prCount }}</span>
+          </button>
+        </div>
+
+        <div class="loading"
+          *ngIf="isLoadingIssues && allIssues.length === 0">
+          Loading issues...
+        </div>
+
+        <div *ngIf="!isLoadingIssues || allIssues.length > 0">
+
+          <div class="empty-state"
+            *ngIf="filteredIssues.length === 0 && !isLoadingIssues">
+            No {{ activeFilter }} items found in {{ selectedRepo.name }}.
+          </div>
+
+          <app-issue-list
+            *ngIf="filteredIssues.length > 0"
+            [issues]="filteredIssues">
+          </app-issue-list>
+
+          <div class="load-more-row" *ngIf="hasNextPage">
+            <button class="load-more-btn"
+              (click)="loadMore()"
+              [disabled]="isLoadingIssues">
+              {{ isLoadingIssues ? 'Loading...' : 'Load more' }}
+            </button>
+          </div>
+
         </div>
       </div>
 

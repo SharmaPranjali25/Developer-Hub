@@ -3,7 +3,25 @@
 // components according to the Material 3 design spec.
 // Learn more about theming and how to use it for your application's
 // custom components at https://material.angular.dev/guide/theming
+
+
+// Keep whatever else was already in your styles.scss below this
 @use '@angular/material' as mat;
+:root {
+  --bg-deep:    #0d1117;
+  --bg-surface: #161b27;
+  --bg-card:    #1c2333;
+  --bg-hover:   #222d42;
+  --border-col: #2a3448;
+  --cyan:       #00c8ff;
+  --cyan-dim:   rgba(0, 200, 255, 0.12);
+  --green-col:  #3fb950;
+  --red-col:    #f85149;
+  --blue-col:   #58a6ff;
+  --text-col:   #e6edf3;
+  --muted-col:  #7d8fa8;
+  --dim-col:    #4a5568;
+}
 
 html {
   height: 100%;

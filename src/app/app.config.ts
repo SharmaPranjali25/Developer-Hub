@@ -1,29 +1,33 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideAuth0, authHttpInterceptorFn } from '@auth0/auth0-angular';
 import { routes } from './app.routes';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import { withInterceptors } from '@angular/common/http';
 import { environment } from '../environments/environment';
-import { provideAuth0 } from '@auth0/auth0-angular';
-import { authHttpInterceptorFn } from '@auth0/auth0-angular';
-
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(), // acts like a CCTV and catches any unexpected errors happening in the browser and logs them.
-    provideRouter(routes), // "page navigation": tells what compoents to load when the user navigates to a specific URL.
-  //SSR, makes the page load faster.withEventReplay(): remembers any action the user did before the app fully loads.
+    provideRouter(routes),
+
+    // ✅ Keep interceptor for Auth0 (for your own backend if needed)
     provideHttpClient(withInterceptors([authHttpInterceptorFn])),
+
     provideAuth0({
       domain: environment.auth.domain,
       clientId: environment.auth.clientId,
       authorizationParams: {
         redirect_uri: environment.auth.redirectUri
-        // redirect_uri: where to comeback afetr login(localhost:4200).
-      }
-    }),
+      },
 
+      // 🚨 FIX: DO NOT attach Auth0 token to GitHub API
+      httpInterceptor: {
+        allowedList: [
+          // ✅ Keep empty OR add ONLY your backend URLs
+          // Example:
+          // 'http://localhost:8080/api/*'
+        ]
+      }
+    })
   ]
 };
 

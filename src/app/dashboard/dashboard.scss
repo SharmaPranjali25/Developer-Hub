@@ -10,7 +10,6 @@ $cyan-dim:   rgba(0, 200, 255, 0.12);
 $green:      #3fb950;
 $red:        #f85149;
 $blue:       #58a6ff;
-$yellow:     #f5c518;
 $text:       #e6edf3;
 $muted:      #7d8fa8;
 $dim:        #4a5568;
@@ -27,7 +26,7 @@ $dim:        #4a5568;
   font-size: 13px;
 }
 
-// ── Sidebar ───────────────────────────────────────────────────
+// ── Sidebar ───────────────────────────────────────────
 .sidebar {
   width: 240px;
   min-width: 240px;
@@ -57,8 +56,7 @@ $dim:        #4a5568;
   }
   .logo-text {
     font-family: 'Rajdhani', sans-serif;
-    font-weight: 700; font-size: 16px;
-    color: $text;
+    font-weight: 700; font-size: 16px; color: $text;
   }
   .logo-beta {
     font-size: 10px; color: $muted;
@@ -78,9 +76,8 @@ $dim:        #4a5568;
 .nav-item {
   display: flex; align-items: center; gap: 8px;
   padding: 7px 10px; border-radius: 6px;
-  cursor: pointer; color: $muted;
-  margin-bottom: 2px;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  cursor: pointer; color: $muted; margin-bottom: 2px;
+  transition: background-color 0.15s, color 0.15s;
 
   &:hover { background: $bg-hover; color: $text; }
   &.active { background: $bg-hover; color: $cyan; font-weight: 500; }
@@ -90,7 +87,11 @@ $dim:        #4a5568;
     background: $bg-deep; border-radius: 10px;
     padding: 1px 7px; color: $muted;
     border: 1px solid $border;
-    &.alert { background: rgba(248,81,73,0.15); color: $red; border-color: rgba(248,81,73,0.3); }
+    &.alert {
+      background: rgba(248,81,73,0.15);
+      color: $red;
+      border-color: rgba(248,81,73,0.3);
+    }
   }
 }
 
@@ -100,8 +101,16 @@ $dim:        #4a5568;
   display: flex; align-items: center; gap: 8px;
   padding: 6px 10px; border-radius: 6px;
   cursor: pointer; color: $muted; font-size: 12px;
-  transition: background-color 0.15s ease;
+  transition: background-color 0.15s;
+
   &:hover { background: $bg-hover; color: $text; }
+
+  // Highlighted when this repo is selected
+  &.selected {
+    background: $cyan-dim;
+    color: $cyan;
+    border: 1px solid rgba(0, 200, 255, 0.2);
+  }
 
   .repo-dot {
     width: 8px; height: 8px;
@@ -111,7 +120,7 @@ $dim:        #4a5568;
   .repo-count { font-size: 11px; color: $dim; }
 }
 
-// ── Main ──────────────────────────────────────────────────────
+// ── Main ──────────────────────────────────────────────
 .main-content {
   flex: 1; display: flex;
   flex-direction: column; overflow: hidden;
@@ -145,29 +154,144 @@ $dim:        #4a5568;
     border: 1px solid $border;
     display: flex; align-items: center; justify-content: center;
     font-size: 12px; font-weight: 600; cursor: pointer;
-    transition: border-color 0.2s ease;
+    transition: border-color 0.2s;
     &:hover { border-color: $cyan; }
   }
   .logout-btn {
     font-size: 12px; padding: 5px 12px;
     border: 1px solid $border; border-radius: 6px;
     background: transparent; color: $muted;
-    font-family: 'Fira Code', monospace;
-    cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    font-family: 'Fira Code', monospace; cursor: pointer;
+    transition: background-color 0.15s, color 0.15s;
     &:hover { background: $bg-hover; color: $text; }
   }
 }
 
-// ── Content ───────────────────────────────────────────────────
+// ── Content ───────────────────────────────────────────
 .content {
   flex: 1; overflow-y: auto; padding: 20px 24px;
   display: flex; flex-direction: column; gap: 16px;
 }
 
-// ── Stats ─────────────────────────────────────────────────────
+// ── Repo grid (VIEW 1) ────────────────────────────────
+.repos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.repo-card {
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 16px;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+
+  &:hover {
+    border-color: $cyan;
+    background: $bg-hover;
+  }
+}
+
+.repo-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.repo-card-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15px; font-weight: 700;
+  color: $cyan;
+}
+
+.repo-private-badge {
+  font-size: 10px; padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(248,81,73,0.1);
+  color: $red;
+  border: 1px solid rgba(248,81,73,0.2);
+}
+
+.repo-card-desc {
+  font-size: 11px; color: $muted;
+  line-height: 1.5; margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.repo-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.repo-card-lang {
+  color: $cyan; opacity: 0.7;
+}
+
+.repo-card-issues {
+  color: $muted;
+}
+
+// ── Repo pagination ───────────────────────────────────
+.repo-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 0 4px;
+}
+
+.repo-page-info {
+  font-size: 11px; color: $muted;
+}
+
+.page-btn {
+  font-size: 12px; padding: 6px 14px;
+  border: 1px solid $border; border-radius: 6px;
+  background: transparent; color: $muted;
+  font-family: 'Fira Code', monospace;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover:not([disabled]) { background: $bg-hover; color: $text; }
+  &[disabled] { opacity: 0.3; cursor: not-allowed; }
+}
+
+.page-dots {
+  display: flex; gap: 6px; align-items: center;
+}
+
+.page-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: $dim;
+  transition: background-color 0.15s;
+  &.active { background: $cyan; }
+}
+
+// ── Back button (VIEW 2) ──────────────────────────────
+.back-btn {
+  font-size: 12px; padding: 6px 14px;
+  border: 1px solid $border; border-radius: 6px;
+  background: transparent; color: $muted;
+  font-family: 'Fira Code', monospace;
+  cursor: pointer; margin-bottom: 16px;
+  transition: all 0.15s;
+  &:hover { background: $bg-hover; color: $text; }
+}
+
+// ── Stats row (VIEW 2) ────────────────────────────────
 .stats-row {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
 }
 
 .stat-card {
@@ -177,8 +301,7 @@ $dim:        #4a5568;
 
   &::before {
     content: '';
-    position: absolute; top: 0; left: 10%; right: 10%;
-    height: 2px;
+    position: absolute; top: 0; left: 10%; right: 10%; height: 2px;
     background: linear-gradient(90deg, transparent, $cyan, transparent);
   }
 
@@ -194,20 +317,22 @@ $dim:        #4a5568;
   }
 }
 
-// ── Section header ────────────────────────────────────────────
+// ── Section header ────────────────────────────────────
 .section-header {
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center;
+  justify-content: space-between;
 
   .section-title {
     font-family: 'Rajdhani', sans-serif;
     font-size: 15px; font-weight: 600; color: $text;
   }
-  .view-all { font-size: 12px; color: $cyan; text-decoration: none;
+  .view-all {
+    font-size: 12px; color: $cyan; text-decoration: none;
     &:hover { text-decoration: underline; }
   }
 }
 
-// ── Filters ───────────────────────────────────────────────────
+// ── Filters ───────────────────────────────────────────
 .filters-row {
   display: flex; gap: 4px;
   border-bottom: 1px solid $border; padding-bottom: 12px;
@@ -219,7 +344,7 @@ $dim:        #4a5568;
   border-radius: 6px; border: 1px solid transparent;
   background: none; color: $muted; cursor: pointer;
   font-family: 'Fira Code', monospace;
-  transition: all 0.15s ease;
+  transition: all 0.15s;
 
   &:hover { background: $bg-hover; color: $text; }
   &.active {
@@ -239,12 +364,19 @@ $dim:        #4a5568;
   font-size: 13px; color: $dim;
 }
 
-.load-more-row { display: flex; justify-content: center; padding: 16px 0; }
+.load-more-row {
+  display: flex; justify-content: center; padding: 16px 0;
+}
+
 .load-more-btn {
   font-size: 12px; padding: 7px 20px;
   border: 1px solid $border; border-radius: 6px;
   background: transparent; color: $muted;
   font-family: 'Fira Code', monospace; cursor: pointer;
-  transition: all 0.15s ease;
-  &:hover { background: $bg-hover; color: $text; }
+  transition: all 0.15s;
+  &:hover:not([disabled]) { background: $bg-hover; color: $text; }
+  &[disabled] { opacity: 0.4; cursor: not-allowed; }
 }
+
+// issues?state=open   ← OLD: only fetches open issues
+// issues?state=all    ← NEW: fetches both open and closed
