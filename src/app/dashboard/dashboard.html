@@ -1,5 +1,6 @@
 <div class="app-shell">
 
+  <!-- ═══════════════════ SIDEBAR ═══════════════════ -->
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="logo-icon">DH</div>
@@ -8,224 +9,199 @@
     </div>
 
     <nav class="sidebar-nav">
+
       <div class="nav-label">OVERVIEW</div>
 
-      <div class="nav-item" *ngIf="selectedRepo" (click)="backToRepos()">
-        ← Back to Repos
-      </div>
-
       <div class="nav-item active">
+        <span class="nav-item-icon">⊞</span>
         Dashboard
         <span class="nav-count">{{ allIssues.length }}</span>
       </div>
-      <div class="nav-item">
+
+      <div class="nav-item" [class.active]="activeFilter === 'open'" (click)="setFilter('open')">
+        <span class="nav-item-icon">◉</span>
         Issues
-        <span class="nav-count alert">{{ openCount }}</span>
+        <span class="nav-count nav-count--red">{{ openCount }}</span>
       </div>
-      <div class="nav-item">
+
+      <div class="nav-item" [class.active]="activeFilter === 'pr'" (click)="setFilter('pr')">
+        <span class="nav-item-icon">⌥</span>
         Pull Requests
-        <span class="nav-count">{{ prCount }}</span>
+        <span class="nav-count nav-count--blue">{{ prCount }}</span>
       </div>
 
-      <div class="nav-label" style="margin-top:16px">ACTIVITY</div>
-      <div class="nav-item">Recent</div>
-      <div class="nav-item">Assigned to me</div>
+      <div class="nav-label" style="margin-top: 20px">ACTIVITY</div>
 
-      <div class="nav-label" style="margin-top:16px">REPOSITORIES</div>
-      <div class="repo-list">
-        <div
-          class="repo-item"
-          *ngFor="let repo of repos; trackBy: trackByRepo"
-          [class.selected]="selectedRepo?.name === repo.name"
-          (click)="selectRepo(repo)">
-          <span class="repo-dot"></span>
-          <span class="repo-name">{{ repo.name }}</span>
-          <span class="repo-count">{{ repo.open_issues_count }}</span>
-        </div>
+      <div class="nav-item" [class.active]="activeFilter === 'open'" (click)="setFilter('open')">
+        <span class="nav-item-icon">◷</span>
+        Recent
       </div>
+
+      <div class="nav-label" style="margin-top: 20px">REPOSITORIES</div>
+
+      <div class="repo-item-single">
+        <span class="repo-dot" style="background:#3fb950"></span>
+        <span class="repo-name">{{ repoName }}</span>
+        <span class="nav-count">{{ openCount }}</span>
+      </div>
+
     </nav>
+
+    <!-- User at bottom -->
+    <div class="sidebar-footer" *ngIf="user$ | async as user">
+      <img class="user-avatar" [src]="user.picture" [alt]="user.name" />
+      <span class="user-name">{{ user.nickname || user.name }}</span>
+      <button class="logout-btn" (click)="logout()" title="Sign out">↩</button>
+    </div>
   </aside>
 
+  <!-- ═══════════════════ MAIN ═══════════════════ -->
   <main class="main-content">
 
+    <!-- TOP BAR -->
     <header class="topbar">
-      <span class="topbar-title">
-        {{ environment.github.defaultOrg }}
-        <span class="topbar-slash">/</span>
-        {{ selectedRepo ? selectedRepo.name : 'Dashboard' }}
-      </span>
+      <div class="topbar-left">
+        <span class="topbar-org">{{ environment.github.defaultOrg }}</span>
+        <span class="topbar-sep">/</span>
+        <span class="topbar-page">Dashboard</span>
+        <span class="auth-badge" *ngIf="user$ | async">● Signed in via Auth0</span>
+      </div>
+
       <div class="topbar-right">
-        <div class="auth-pill">
-          <span class="auth-dot"></span>
-          Signed in via Auth0
+        <div class="search-box">
+          <span class="search-icon">⌕</span>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Search issues, PRs..."
+            [(ngModel)]="searchQuery"
+            (input)="onSearch()" />
         </div>
-        <ng-container *ngIf="user$ | async as user">
-          <div class="avatar" [title]="user.name ?? ''">
-            {{ (user.name ?? 'U')[0].toUpperCase() }}
-          </div>
-        </ng-container>
-        <button class="logout-btn" (click)="logout()">Sign out</button>
+        <div class="user-avatar-sm" *ngIf="user$ | async as user">
+          <img [src]="user.picture" [alt]="user.name" />
+        </div>
       </div>
     </header>
 
     <div class="content">
 
-      <!-- VIEW 1: REPO GRID -->
-      <div *ngIf="!selectedRepo">
+      <!-- ── LOADING / ERROR ── -->
+      <div class="loading-state" *ngIf="isLoadingRepo && isLoadingIssues">
+        <div class="spinner"></div>
+        Loading Developer-Hub...
+      </div>
 
-        <div class="loading" *ngIf="isLoadingRepos">
-          Loading repositories...
+      <div class="error-state" *ngIf="loadError && !isLoadingRepo">
+        {{ loadError }}
+      </div>
+
+      <!-- ── MAIN DASHBOARD ── -->
+      <div *ngIf="!isLoadingRepo || allIssues.length > 0">
+
+        <!-- STAT CARDS -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Open Issues</div>
+            <div class="stat-value">{{ openCount }}</div>
+            <div class="stat-sub"><span class="dot dot--green">●</span> +3 today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Open PRs</div>
+            <div class="stat-value">{{ prCount }}</div>
+            <div class="stat-sub"><span class="dot dot--blue">●</span>
+              {{ prCount > 0 ? prCount + ' need review' : 'none pending' }}
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Closed This Week</div>
+            <div class="stat-value">{{ closedThisWeekCount }}</div>
+            <div class="stat-sub"><span class="dot dot--orange">●</span> ↑ vs last wk</div>
+          </div>
+          <div class="stat-card" *ngIf="repo">
+            <div class="stat-label">Total Issues</div>
+            <div class="stat-value">{{ repo.open_issues_count }}</div>
+            <div class="stat-sub"><span class="dot dot--yellow">●</span> in {{ repoName }}</div>
+          </div>
         </div>
 
-        <!-- Error state — shows if token is bad or repos not found -->
-        <div class="error-state" *ngIf="loadError">
-          {{ loadError }}
-        </div>
-
-        <div *ngIf="!isLoadingRepos && !loadError">
-
-          <div class="section-header">
-            <span class="section-title">Your Repositories</span>
-            <span class="repo-page-info">
-              Page {{ currentRepoPage + 1 }} of {{ repoPages.length }}
-            </span>
+        <!-- ISSUES & PRs SECTION -->
+        <div class="issues-section">
+          <div class="issues-section-header">
+            <span class="section-title">Issues &amp; Pull Requests</span>
+            <a class="view-all-link" href="#" (click)="$event.preventDefault()">View all →</a>
           </div>
 
-          <div class="repos-grid">
-            <div
-              class="repo-card"
-              *ngFor="let repo of currentPageRepos; trackBy: trackByRepo"
-              (click)="selectRepo(repo)">
+          <!-- Filter tabs + sort -->
+          <div class="filter-bar">
+            <div class="filter-tabs">
+              <button class="filter-tab" [class.active]="activeFilter === 'open'" (click)="setFilter('open')">
+                <span class="dot dot--green">●</span> Open <span class="tab-count">{{ openCount }}</span>
+              </button>
+              <button class="filter-tab" [class.active]="activeFilter === 'closed'" (click)="setFilter('closed')">
+                <span class="dot dot--purple">●</span> Closed <span class="tab-count">{{ closedCount }}</span>
+              </button>
+              <button class="filter-tab" [class.active]="activeFilter === 'pr'" (click)="setFilter('pr')">
+                Pull Requests <span class="tab-count">{{ prCount }}</span>
+              </button>
+            </div>
 
-              <div class="repo-card-header">
-                <span class="repo-card-name">{{ repo.name }}</span>
-                <span class="repo-private-badge" *ngIf="repo.private">
-                  private
-                </span>
+            <div class="filter-actions">
+              <button class="filter-action-btn">Label ▾</button>
+              <button class="filter-action-btn">Sort ▾</button>
+            </div>
+          </div>
+
+          <!-- Loading issues -->
+          <div class="loading-inline" *ngIf="isLoadingIssues">
+            <div class="spinner spinner--sm"></div> Loading...
+          </div>
+
+          <!-- Empty state -->
+          <div *ngIf="!isLoadingIssues && filteredIssues.length === 0" class="empty-state">
+            No {{ activeFilter === 'pr' ? 'pull requests' : activeFilter + ' issues' }} found
+            <span *ngIf="searchQuery"> for "{{ searchQuery }}"</span>.
+          </div>
+
+          <!-- Issue rows -->
+          <div class="issue-list" *ngIf="!isLoadingIssues && filteredIssues.length > 0">
+            <div class="issue-row" *ngFor="let issue of filteredIssues">
+
+              <!-- Status dot -->
+              <span class="issue-status-dot"
+                [class.dot--green]="issue.state === 'open' && !issue.pull_request"
+                [class.dot--purple]="issue.state === 'closed'"
+                [class.dot--blue]="!!issue.pull_request">●</span>
+
+              <!-- Main info -->
+              <div class="issue-main">
+                <div class="issue-title-row">
+                  <a class="issue-title" [href]="issue.html_url" target="_blank">
+                    {{ issue.title }}
+                  </a>
+                  <span class="issue-label" *ngFor="let label of (issue.labels || [])">
+                    {{ label.name }}
+                  </span>
+                </div>
+                <div class="issue-meta">
+                  #{{ issue.number }} · opened {{ issue.created_at | date:'mediumDate' }}
+                  <span *ngIf="issue.user"> · {{ issue.user.login }}</span>
+                  <span class="review-badge" *ngIf="issue.pull_request">Review requested</span>
+                </div>
               </div>
 
-              <p class="repo-card-desc">
-                {{ repo.description || 'No description' }}
-              </p>
-
-              <div class="repo-card-footer">
-                <span class="repo-card-lang" *ngIf="repo.language">
-                  {{ repo.language }}
-                </span>
-                <span class="repo-card-issues">
-                  {{ repo.open_issues_count }} open issues
+              <!-- Right side: comments -->
+              <div class="issue-right">
+                <span class="comment-count" *ngIf="issue.comments > 0">
+                  💬 {{ issue.comments }}
                 </span>
               </div>
 
             </div>
           </div>
 
-          <div class="repo-pagination" *ngIf="repoPages.length > 1">
-            <button
-              class="page-btn"
-              [disabled]="currentRepoPage === 0"
-              (click)="prevRepoPage()">
-              ← Previous
-            </button>
-            <span class="page-dots">
-              <span
-                *ngFor="let page of repoPages; let i = index"
-                class="page-dot"
-                [class.active]="i === currentRepoPage">
-              </span>
-            </span>
-            <button
-              class="page-btn"
-              [disabled]="currentRepoPage === repoPages.length - 1"
-              (click)="nextRepoPage()">
-              Next →
-            </button>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- VIEW 2: ISSUE DASHBOARD -->
-      <div *ngIf="selectedRepo">
-
-        <button class="back-btn" (click)="backToRepos()">
-          ← Back to repositories
-        </button>
-
-        <div class="stats-row">
-          <div class="stat-card">
-            <div class="stat-label">Open issues</div>
-            <div class="stat-value">{{ openCount }}</div>
-            <div class="stat-sub green">in {{ selectedRepo.name }}</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Open PRs</div>
-            <div class="stat-value">{{ prCount }}</div>
-            <div class="stat-sub blue">need review</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Closed</div>
-            <div class="stat-value">{{ closedCount }}</div>
-            <div class="stat-sub gray">this fetch</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Total fetched</div>
-            <div class="stat-value">{{ allIssues.length }}</div>
-            <div class="stat-sub gray">from API</div>
-          </div>
-        </div>
-
-        <div class="section-header">
-          <span class="section-title">Issues &amp; Pull Requests</span>
-          <a
-            class="view-all"
-            [href]="'https://github.com/' + environment.github.defaultOrg + '/' + selectedRepo.name + '/issues'"
-            target="_blank">
-            View on GitHub →
-          </a>
-        </div>
-
-        <div class="filters-row">
-          <button class="filter-btn"
-            [class.active]="activeFilter === 'open'"
-            (click)="setFilter('open')">
-            Open <span class="filter-count">{{ openCount }}</span>
-          </button>
-          <button class="filter-btn"
-            [class.active]="activeFilter === 'closed'"
-            (click)="setFilter('closed')">
-            Closed <span class="filter-count">{{ closedCount }}</span>
-          </button>
-          <button class="filter-btn"
-            [class.active]="activeFilter === 'pr'"
-            (click)="setFilter('pr')">
-            Pull Requests <span class="filter-count">{{ prCount }}</span>
-          </button>
-        </div>
-
-        <div class="loading"
-          *ngIf="isLoadingIssues && allIssues.length === 0">
-          Loading issues...
-        </div>
-
-        <div *ngIf="!isLoadingIssues || allIssues.length > 0">
-
-          <div class="empty-state"
-            *ngIf="filteredIssues.length === 0 && !isLoadingIssues">
-            No {{ activeFilter }} items found in {{ selectedRepo.name }}.
-          </div>
-
-          <app-issue-list
-            *ngIf="filteredIssues.length > 0"
-            [issues]="filteredIssues">
-          </app-issue-list>
-
-          <div class="load-more-row" *ngIf="hasNextPage">
-            <button class="load-more-btn"
-              (click)="loadMore()"
-              [disabled]="isLoadingIssues">
-              {{ isLoadingIssues ? 'Loading...' : 'Load more' }}
-            </button>
+          <!-- Load more -->
+          <div class="load-more-wrap" *ngIf="hasNextPage && !isLoadingIssues">
+            <button class="load-more-btn" (click)="loadMore()">Load more</button>
           </div>
 
         </div>
