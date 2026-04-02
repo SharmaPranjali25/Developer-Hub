@@ -1,51 +1,43 @@
 import { environment } from '../../environments/environment';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '@auth0/auth0-angular';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { GithubService } from '../services/github.service';
 import { Issue, Repo } from '../models/github.models';
 import { IssueListComponent } from '../issue-list/issue-list';
 
+const TARGET_REPO = 'Developer-Hub';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, IssueListComponent],
+  imports: [CommonModule, FormsModule, IssueListComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
 
   allIssues: Issue[] = [];
   filteredIssues: Issue[] = [];
-  repos: Repo[] = [];
-  selectedRepo: Repo | null = null;
+  repo: Repo | null = null;
 
-  isLoadingRepos = true;
+  isLoadingRepo = true;
   isLoadingIssues = false;
-  loadError = '';   // shows error message if loading fails
+  loadError = '';
 
   hasNextPage = false;
   currentPage = 1;
   activeFilter: 'open' | 'closed' | 'pr' = 'open';
+
+  searchQuery = '';
+
   user$: Observable<any>;
   protected environment = environment;
+  readonly repoName = TARGET_REPO;
 
-  currentRepoPage = 0;
-  reposPerPage = 4;   // 4 repos per page as per your requirement
-
-  // Splits flat repos array into pages of 4
-  get repoPages(): Repo[][] {
-    const pages: Repo[][] = [];
-    for (let i = 0; i < this.repos.length; i += this.reposPerPage) {
-      pages.push(this.repos.slice(i, i + this.reposPerPage));
-    }
-    return pages;
-  }
-
-  get currentPageRepos(): Repo[] {
-    return this.repoPages[this.currentRepoPage] ?? [];
-  }
+  private issuesSub?: Subscription;
 
   constructor(
     private github: GithubService,
@@ -55,77 +47,40 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadRepos();
+    this.loadRepo();
   }
 
-  loadRepos(): void {
-    this.isLoadingRepos = true;
+  ngOnDestroy(): void {
+    this.issuesSub?.unsubscribe();
+  }
+
+  // ───────── LOAD SINGLE REPO ─────────
+  loadRepo(): void {
+    this.isLoadingRepo = true;
     this.loadError = '';
 
-    const pinnedRepos = environment.github.pinnedRepos;
-
-    // If pinnedRepos exists and has items, use getPinnedRepos
-    // Otherwise fall back to getRepos (all repos)
-    const repoCall = (pinnedRepos && pinnedRepos.length > 0)
-      ? this.github.getPinnedRepos(environment.github.defaultOrg, pinnedRepos)
-      : this.github.getRepos(environment.github.defaultOrg);
-
-    repoCall.subscribe({
-      next: (repos) => {
-        console.log('Repos loaded:', repos); // check DevTools console
-        if (repos.length === 0) {
-          // Pinned repos all failed — fall back to all repos
-          this.loadAllRepos();
-        } else {
-          this.repos = repos;
-          this.isLoadingRepos = false;
-        }
+    this.github.getRepo(environment.github.defaultOrg, TARGET_REPO).subscribe({
+      next: (repo) => {
+        this.repo = repo;
+        this.isLoadingRepo = false;
+        this.loadIssues(1);
       },
       error: (err) => {
-        console.error('Failed to load repos:', err);
-        this.loadError = 'Failed to load repositories. Check your GitHub token.';
-        this.isLoadingRepos = false;
+        console.error('Failed to load repo:', err);
+        this.loadError = 'Failed to load repository';
+        this.isLoadingRepo = false;
+        // Still try to load issues even if repo meta fails
+        this.loadIssues(1);
       }
     });
   }
 
-  // Fallback: load ALL repos from GitHub account
-  loadAllRepos(): void {
-    this.github.getRepos(environment.github.defaultOrg).subscribe({
-      next: (repos) => {
-        console.log('Fallback repos loaded:', repos);
-        this.repos = repos;
-        this.isLoadingRepos = false;
-      },
-      error: (err) => {
-        console.error('Fallback also failed:', err);
-        this.loadError = 'Cannot connect to GitHub. Token may be expired.';
-        this.isLoadingRepos = false;
-      }
-    });
-  }
-
-  selectRepo(repo: Repo): void {
-    this.selectedRepo = repo;
-    this.allIssues = [];
-    this.filteredIssues = [];
-    this.currentPage = 1;
-    this.activeFilter = 'open';
-    this.loadIssues(1, repo.name);
-  }
-
-  backToRepos(): void {
-    this.selectedRepo = null;
-    this.allIssues = [];
-    this.filteredIssues = [];
-  }
-
-  loadIssues(page: number = 1, repoName?: string): void {
-    const repo = repoName ?? this.selectedRepo?.name;
-    if (!repo) return;
-
+  // ───────── LOAD ISSUES ─────────
+  loadIssues(page: number = 1): void {
+    this.issuesSub?.unsubscribe();
     this.isLoadingIssues = true;
-    this.github.getIssues(environment.github.defaultOrg, repo, page)
+
+    this.issuesSub = this.github.getIssues(environment.github.defaultOrg, TARGET_REPO, page)
       .subscribe({
         next: (result) => {
           if (page === 1) {
@@ -133,8 +88,10 @@ export class DashboardComponent implements OnInit {
           } else {
             this.allIssues = [...this.allIssues, ...result.data];
           }
+
           this.hasNextPage = result.hasNextPage;
-          this.currentPage = page;
+          this.currentPage = result.nextPage;
+
           this.applyFilter();
           this.isLoadingIssues = false;
         },
@@ -145,55 +102,47 @@ export class DashboardComponent implements OnInit {
       });
   }
 
+  // ───────── LOAD MORE ─────────
   loadMore(): void {
-    this.loadIssues(this.currentPage + 1);
+    this.loadIssues(this.currentPage);
   }
 
-  nextRepoPage(): void {
-    if (this.currentRepoPage < this.repoPages.length - 1) {
-      this.currentRepoPage++;
-    }
-  }
-
-  prevRepoPage(): void {
-    if (this.currentRepoPage > 0) {
-      this.currentRepoPage--;
-    }
-  }
-
-  trackByRepo(index: number, repo: Repo): number {
-    return repo.id;
-  }
-
+  // ───────── FILTER ─────────
   setFilter(filter: 'open' | 'closed' | 'pr'): void {
     this.activeFilter = filter;
     this.applyFilter();
   }
 
   applyFilter(): void {
+    let base: Issue[];
+
     switch (this.activeFilter) {
       case 'open':
-        this.filteredIssues = this.allIssues.filter(
-          i => i.state === 'open' && !i.pull_request
-        );
+        base = this.allIssues.filter(i => i.state === 'open' && !i.pull_request);
         break;
       case 'closed':
-        this.filteredIssues = this.allIssues.filter(
-          i => i.state === 'closed'
-        );
+        base = this.allIssues.filter(i => i.state === 'closed');
         break;
       case 'pr':
-        this.filteredIssues = this.allIssues.filter(
-          i => !!i.pull_request
-        );
+        base = this.allIssues.filter(i => !!i.pull_request);
         break;
     }
+
+    if (this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      base = base.filter(i => i.title.toLowerCase().includes(q));
+    }
+
+    this.filteredIssues = base;
   }
 
+  onSearch(): void {
+    this.applyFilter();
+  }
+
+  // ───────── COUNTS ─────────
   get openCount(): number {
-    return this.allIssues.filter(
-      i => i.state === 'open' && !i.pull_request
-    ).length;
+    return this.allIssues.filter(i => i.state === 'open' && !i.pull_request).length;
   }
 
   get prCount(): number {
@@ -204,6 +153,15 @@ export class DashboardComponent implements OnInit {
     return this.allIssues.filter(i => i.state === 'closed').length;
   }
 
+  get closedThisWeekCount(): number {
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  return this.allIssues.filter((i: any) =>
+    i.state === 'closed' && i.closed_at && new Date(i.closed_at) >= oneWeekAgo
+  ).length;
+}
+
+  // ───────── LOGOUT ─────────
   logout(): void {
     this.auth.logout({
       logoutParams: { returnTo: window.location.origin }
