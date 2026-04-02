@@ -1,39 +1,28 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Rajdhani:wght@500;600;700&display=swap');
+// ═══════════════════════════════════════════
+//  Dev Hub Dashboard — Single Repo Mode
+// ═══════════════════════════════════════════
 
-$bg-deep:    #0d1117;
-$bg-surface: #161b27;
-$bg-card:    #1c2333;
-$bg-hover:   #222d42;
-$border:     #2a3448;
-$cyan:       #00c8ff;
-$cyan-dim:   rgba(0, 200, 255, 0.12);
-$green:      #3fb950;
-$red:        #f85149;
-$blue:       #58a6ff;
-$text:       #e6edf3;
-$muted:      #7d8fa8;
-$dim:        #4a5568;
+:host { display: block; height: 100vh; }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
+// ── Layout ──────────────────────────────────
 .app-shell {
   display: flex;
   height: 100vh;
-  overflow: hidden;
-  background: $bg-deep;
-  font-family: 'Fira Code', monospace;
-  color: $text;
+  background: #f6f8fa;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 13px;
+  color: #1c2128;
 }
 
-// ── Sidebar ───────────────────────────────────────────
+// ── Sidebar ─────────────────────────────────
 .sidebar {
-  width: 240px;
-  min-width: 240px;
-  background: $bg-surface;
-  border-right: 1px solid $border;
+  width: 200px;
+  min-width: 200px;
+  background: #fff;
+  border-right: 1px solid #d0d7de;
   display: flex;
   flex-direction: column;
+  height: 100vh;
   overflow-y: auto;
 }
 
@@ -41,342 +30,561 @@ $dim:        #4a5568;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 16px;
-  border-bottom: 1px solid $border;
-
-  .logo-icon {
-    width: 28px; height: 28px;
-    border-radius: 6px;
-    background: $bg-card;
-    border: 1px solid $border;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700; font-size: 11px;
-    color: $cyan;
-  }
-  .logo-text {
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700; font-size: 16px; color: $text;
-  }
-  .logo-beta {
-    font-size: 10px; color: $muted;
-    border: 1px solid $border;
-    border-radius: 4px; padding: 1px 5px;
-  }
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid #d0d7de;
 }
 
-.sidebar-nav { padding: 12px 8px; }
-
-.nav-label {
-  font-size: 10px; font-weight: 600;
-  color: $dim; letter-spacing: 1px;
-  padding: 4px 8px 6px;
-}
-
-.nav-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 7px 10px; border-radius: 6px;
-  cursor: pointer; color: $muted; margin-bottom: 2px;
-  transition: background-color 0.15s, color 0.15s;
-
-  &:hover { background: $bg-hover; color: $text; }
-  &.active { background: $bg-hover; color: $cyan; font-weight: 500; }
-
-  .nav-count {
-    margin-left: auto; font-size: 11px;
-    background: $bg-deep; border-radius: 10px;
-    padding: 1px 7px; color: $muted;
-    border: 1px solid $border;
-    &.alert {
-      background: rgba(248,81,73,0.15);
-      color: $red;
-      border-color: rgba(248,81,73,0.3);
-    }
-  }
-}
-
-.repo-list { padding: 4px 0; }
-
-.repo-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 6px 10px; border-radius: 6px;
-  cursor: pointer; color: $muted; font-size: 12px;
-  transition: background-color 0.15s;
-
-  &:hover { background: $bg-hover; color: $text; }
-
-  // Highlighted when this repo is selected
-  &.selected {
-    background: $cyan-dim;
-    color: $cyan;
-    border: 1px solid rgba(0, 200, 255, 0.2);
-  }
-
-  .repo-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%; background: $cyan; flex-shrink: 0;
-  }
-  .repo-name { flex: 1; }
-  .repo-count { font-size: 11px; color: $dim; }
-}
-
-// ── Main ──────────────────────────────────────────────
-.main-content {
-  flex: 1; display: flex;
-  flex-direction: column; overflow: hidden;
-}
-
-.topbar {
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 24px;
-  background: $bg-surface; border-bottom: 1px solid $border;
-
-  .topbar-title { font-size: 13px; color: $muted; }
-  .topbar-slash { color: $dim; margin: 0 4px; }
-  .topbar-right {
-    margin-left: auto; display: flex;
-    align-items: center; gap: 10px;
-  }
-  .auth-pill {
-    display: flex; align-items: center; gap: 5px;
-    font-size: 11px; color: $green;
-    background: rgba(63,185,80,0.1);
-    border: 1px solid rgba(63,185,80,0.2);
-    border-radius: 12px; padding: 3px 10px 3px 6px;
-  }
-  .auth-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%; background: $green;
-  }
-  .avatar {
-    width: 30px; height: 30px; border-radius: 50%;
-    background: $bg-card; color: $cyan;
-    border: 1px solid $border;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 600; cursor: pointer;
-    transition: border-color 0.2s;
-    &:hover { border-color: $cyan; }
-  }
-  .logout-btn {
-    font-size: 12px; padding: 5px 12px;
-    border: 1px solid $border; border-radius: 6px;
-    background: transparent; color: $muted;
-    font-family: 'Fira Code', monospace; cursor: pointer;
-    transition: background-color 0.15s, color 0.15s;
-    &:hover { background: $bg-hover; color: $text; }
-  }
-}
-
-// ── Content ───────────────────────────────────────────
-.content {
-  flex: 1; overflow-y: auto; padding: 20px 24px;
-  display: flex; flex-direction: column; gap: 16px;
-}
-
-// ── Repo grid (VIEW 1) ────────────────────────────────
-.repos-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-  margin-bottom: 20px;
-}
-
-.repo-card {
-  background: $bg-card;
-  border: 1px solid $border;
-  border-radius: 10px;
-  padding: 16px;
-  cursor: pointer;
-  transition: border-color 0.2s, background-color 0.2s;
-
-  &:hover {
-    border-color: $cyan;
-    background: $bg-hover;
-  }
-}
-
-.repo-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.repo-card-name {
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 15px; font-weight: 700;
-  color: $cyan;
-}
-
-.repo-private-badge {
-  font-size: 10px; padding: 2px 6px;
-  border-radius: 4px;
-  background: rgba(248,81,73,0.1);
-  color: $red;
-  border: 1px solid rgba(248,81,73,0.2);
-}
-
-.repo-card-desc {
-  font-size: 11px; color: $muted;
-  line-height: 1.5; margin-bottom: 12px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.repo-card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.logo-icon {
+  width: 28px;
+  height: 28px;
+  background: #1c2128;
+  color: #fff;
+  border-radius: 6px;
   font-size: 11px;
-}
-
-.repo-card-lang {
-  color: $cyan; opacity: 0.7;
-}
-
-.repo-card-issues {
-  color: $muted;
-}
-
-// ── Repo pagination ───────────────────────────────────
-.repo-pagination {
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  padding: 8px 0 4px;
+  letter-spacing: -0.5px;
 }
 
-.repo-page-info {
-  font-size: 11px; color: $muted;
+.logo-text {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1c2128;
 }
 
-.page-btn {
-  font-size: 12px; padding: 6px 14px;
-  border: 1px solid $border; border-radius: 6px;
-  background: transparent; color: $muted;
-  font-family: 'Fira Code', monospace;
+.logo-beta {
+  font-size: 10px;
+  color: #6e7781;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 10px;
+  padding: 1px 6px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 12px 8px;
+}
+
+.nav-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #6e7781;
+  letter-spacing: 0.06em;
+  padding: 4px 8px;
+  margin-top: 4px;
+  margin-bottom: 2px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.15s;
+  color: #24292f;
+  font-weight: 400;
+  transition: background 0.12s;
 
-  &:hover:not([disabled]) { background: $bg-hover; color: $text; }
-  &[disabled] { opacity: 0.3; cursor: not-allowed; }
+  &:hover { background: #f6f8fa; }
+
+  &.active {
+    background: #f6f8fa;
+    font-weight: 600;
+    color: #1c2128;
+  }
 }
 
-.page-dots {
-  display: flex; gap: 6px; align-items: center;
+.nav-item-icon {
+  font-size: 14px;
+  width: 16px;
+  text-align: center;
+  color: #57606a;
 }
 
-.page-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: $dim;
-  transition: background-color 0.15s;
-  &.active { background: $cyan; }
+.nav-count {
+  margin-left: auto;
+  font-size: 11px;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 10px;
+  padding: 1px 6px;
+  color: #57606a;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+
+  &--red { background: #ffebe9; border-color: #ffcecb; color: #cf222e; }
+  &--blue { background: #ddf4ff; border-color: #b6e3ff; color: #0969da; }
 }
 
-// ── Back button (VIEW 2) ──────────────────────────────
-.back-btn {
-  font-size: 12px; padding: 6px 14px;
-  border: 1px solid $border; border-radius: 6px;
-  background: transparent; color: $muted;
-  font-family: 'Fira Code', monospace;
-  cursor: pointer; margin-bottom: 16px;
-  transition: all 0.15s;
-  &:hover { background: $bg-hover; color: $text; }
+.repo-item-single {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: #f6f8fa;
+  margin-top: 4px;
 }
 
-// ── Stats row (VIEW 2) ────────────────────────────────
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+.repo-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.repo-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #1c2128;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 12px 16px;
+  border-top: 1px solid #d0d7de;
+  margin-top: auto;
+}
+
+.user-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-name {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 500;
+  color: #24292f;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #57606a;
+  font-size: 14px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  &:hover { background: #f6f8fa; color: #cf222e; }
+}
+
+// ── Main content ────────────────────────────
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 52px;
+  background: #fff;
+  border-bottom: 1px solid #d0d7de;
+  flex-shrink: 0;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.topbar-org { color: #0969da; font-weight: 500; }
+.topbar-sep { color: #6e7781; }
+.topbar-page { color: #1c2128; font-weight: 600; }
+
+.auth-badge {
+  font-size: 11px;
+  color: #1a7f37;
+  background: #dafbe1;
+  border: 1px solid #aceebb;
+  border-radius: 10px;
+  padding: 2px 8px;
+  margin-left: 8px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
   gap: 12px;
 }
 
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  padding: 5px 10px;
+  gap: 6px;
+  width: 220px;
+  transition: border-color 0.15s;
+
+  &:focus-within {
+    border-color: #0969da;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.1);
+  }
+}
+
+.search-icon {
+  color: #6e7781;
+  font-size: 15px;
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  outline: none;
+  width: 100%;
+  color: #1c2128;
+  &::placeholder { color: #6e7781; }
+}
+
+.user-avatar-sm img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #d0d7de;
+}
+
+// ── Content ──────────────────────────────────
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+// ── Stats row ────────────────────────────────
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  background: #fff;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
 .stat-card {
-  background: $bg-card; border: 1px solid $border;
-  border-radius: 10px; padding: 16px;
-  position: relative; overflow: hidden;
+  padding: 20px 24px;
+  border-right: 1px solid #d0d7de;
 
-  &::before {
-    content: '';
-    position: absolute; top: 0; left: 10%; right: 10%; height: 2px;
-    background: linear-gradient(90deg, transparent, $cyan, transparent);
-  }
-
-  .stat-label { font-size: 11px; color: $muted; margin-bottom: 6px; }
-  .stat-value {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 30px; font-weight: 700;
-    color: $text; margin-bottom: 4px;
-  }
-  .stat-sub { font-size: 11px; color: $dim;
-    &.green { color: $green; }
-    &.blue  { color: $blue; }
-  }
+  &:last-child { border-right: none; }
 }
 
-// ── Section header ────────────────────────────────────
-.section-header {
-  display: flex; align-items: center;
+.stat-label {
+  font-size: 12px;
+  color: #57606a;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 300;
+  color: #1c2128;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.stat-sub {
+  font-size: 11px;
+  color: #57606a;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+// ── Dots ─────────────────────────────────────
+.dot {
+  font-size: 10px;
+
+  &--green { color: #1a7f37; }
+  &--blue  { color: #0969da; }
+  &--purple{ color: #8250df; }
+  &--orange{ color: #bc4c00; }
+  &--yellow{ color: #9a6700; }
+}
+
+// ── Issues section ───────────────────────────
+.issues-section {
+  background: #fff;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.issues-section-header {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-
-  .section-title {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 15px; font-weight: 600; color: $text;
-  }
-  .view-all {
-    font-size: 12px; color: $cyan; text-decoration: none;
-    &:hover { text-decoration: underline; }
-  }
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid #d0d7de;
 }
 
-// ── Filters ───────────────────────────────────────────
-.filters-row {
-  display: flex; gap: 4px;
-  border-bottom: 1px solid $border; padding-bottom: 12px;
+.section-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1c2128;
 }
 
-.filter-btn {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 12px; padding: 5px 12px;
-  border-radius: 6px; border: 1px solid transparent;
-  background: none; color: $muted; cursor: pointer;
-  font-family: 'Fira Code', monospace;
-  transition: all 0.15s;
+.view-all-link {
+  font-size: 12px;
+  color: #0969da;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
 
-  &:hover { background: $bg-hover; color: $text; }
+// ── Filter bar ───────────────────────────────
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-bottom: 1px solid #d0d7de;
+  background: #f6f8fa;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 2px;
+}
+
+.filter-tab {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #57606a;
+  cursor: pointer;
+  font-weight: 400;
+  transition: background 0.12s, color 0.12s;
+
+  &:hover { background: #e8ecef; color: #1c2128; }
+
   &.active {
-    border-color: rgba(0,200,255,0.3);
-    background: $cyan-dim; color: $cyan;
-  }
-
-  .filter-count {
-    background: $bg-deep; border-radius: 8px;
-    padding: 0 6px; font-size: 11px;
-    color: $muted; border: 1px solid $border;
+    background: #fff;
+    color: #1c2128;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
 }
 
-.loading, .empty-state {
-  text-align: center; padding: 40px;
-  font-size: 13px; color: $dim;
+.tab-count {
+  color: #6e7781;
+  font-weight: 400;
 }
 
-.load-more-row {
-  display: flex; justify-content: center; padding: 16px 0;
+.filter-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-action-btn {
+  background: none;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: #24292f;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.12s;
+  &:hover { background: #f3f4f6; }
+}
+
+// ── Issue rows ───────────────────────────────
+.issue-list {
+  divide-y: 1px solid #d0d7de;
+}
+
+.issue-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid #f6f8fa;
+  transition: background 0.1s;
+
+  &:hover { background: #f6f8fa; }
+  &:last-child { border-bottom: none; }
+}
+
+.issue-status-dot {
+  font-size: 14px;
+  margin-top: 1px;
+  flex-shrink: 0;
+
+  &.dot--green  { color: #1a7f37; }
+  &.dot--purple { color: #8250df; }
+  &.dot--blue   { color: #0969da; }
+}
+
+.issue-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.issue-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.issue-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1c2128;
+  text-decoration: none;
+  &:hover { color: #0969da; }
+}
+
+.issue-label {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: #ddf4ff;
+  color: #0550ae;
+  border: 1px solid #b6e3ff;
+  white-space: nowrap;
+}
+
+.issue-meta {
+  font-size: 11px;
+  color: #6e7781;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.review-badge {
+  background: #fff8c5;
+  color: #9a6700;
+  border: 1px solid #e3b341;
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.issue-right {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6e7781;
+  font-size: 11px;
+}
+
+.comment-count {
+  white-space: nowrap;
+}
+
+// ── Load more ────────────────────────────────
+.load-more-wrap {
+  padding: 16px 20px;
+  border-top: 1px solid #d0d7de;
+  text-align: center;
 }
 
 .load-more-btn {
-  font-size: 12px; padding: 7px 20px;
-  border: 1px solid $border; border-radius: 6px;
-  background: transparent; color: $muted;
-  font-family: 'Fira Code', monospace; cursor: pointer;
-  transition: all 0.15s;
-  &:hover:not([disabled]) { background: $bg-hover; color: $text; }
-  &[disabled] { opacity: 0.4; cursor: not-allowed; }
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  padding: 6px 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #24292f;
+  cursor: pointer;
+  transition: background 0.12s;
+  &:hover { background: #e8ecef; }
 }
 
-// issues?state=open   ← OLD: only fetches open issues
-// issues?state=all    ← NEW: fetches both open and closed
+// ── Loading / Error ──────────────────────────
+.loading-state {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 40px;
+  color: #6e7781;
+  font-size: 14px;
+}
+
+.loading-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 20px;
+  color: #6e7781;
+  font-size: 13px;
+}
+
+.error-state {
+  background: #ffebe9;
+  border: 1px solid #ff8182;
+  border-radius: 6px;
+  padding: 14px 18px;
+  color: #cf222e;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.empty-state {
+  padding: 32px 20px;
+  text-align: center;
+  color: #6e7781;
+  font-size: 13px;
+}
+
+// ── Spinner ──────────────────────────────────
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #d0d7de;
+  border-top-color: #0969da;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+
+  &--sm {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
