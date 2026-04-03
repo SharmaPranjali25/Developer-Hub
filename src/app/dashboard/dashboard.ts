@@ -8,7 +8,6 @@ import { GithubService } from '../services/github.service';
 import { Issue, Repo } from '../models/github.models';
 import { IssueListComponent } from '../issue-list/issue-list';
 
-const TARGET_REPO = 'Developer-Hub';
 
 @Component({
   selector: 'app-dashboard',
@@ -35,7 +34,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   user$: Observable<any>;
   protected environment = environment;
-  readonly repoName = TARGET_REPO;
+
+  // ── Multi-repo support ──
+  pinnedRepos = environment.github.pinnedRepos;
+  selectedRepo = environment.github.defaultRepo;
+  get repoName(): string { return this.selectedRepo; }
 
   private issuesSub?: Subscription;
 
@@ -54,12 +57,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.issuesSub?.unsubscribe();
   }
 
+  // ───────── SELECT REPO ─────────
+  selectRepo(repo: string): void {
+    if (this.selectedRepo === repo) return;
+    this.selectedRepo = repo;
+    this.allIssues = [];
+    this.filteredIssues = [];
+    this.currentPage = 1;
+    this.activeFilter = 'open';
+    this.searchQuery = '';
+    this.loadRepo();
+  }
+
   // ───────── LOAD SINGLE REPO ─────────
   loadRepo(): void {
     this.isLoadingRepo = true;
     this.loadError = '';
 
-    this.github.getRepo(environment.github.defaultOrg, TARGET_REPO).subscribe({
+    this.github.getRepo(environment.github.defaultOrg, this.selectedRepo).subscribe({
       next: (repo) => {
         this.repo = repo;
         this.isLoadingRepo = false;
@@ -80,7 +95,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.issuesSub?.unsubscribe();
     this.isLoadingIssues = true;
 
-    this.issuesSub = this.github.getIssues(environment.github.defaultOrg, TARGET_REPO, page)
+    this.issuesSub = this.github.getIssues(environment.github.defaultOrg, this.selectedRepo, page)
       .subscribe({
         next: (result) => {
           if (page === 1) {

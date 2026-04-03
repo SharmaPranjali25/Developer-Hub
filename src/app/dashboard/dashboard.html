@@ -3,9 +3,9 @@
   <!-- ═══════════════════ SIDEBAR ═══════════════════ -->
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <div class="logo-icon">DH</div>
+   
       <span class="logo-text">Dev Hub</span>
-      <span class="logo-beta">beta</span>
+      
     </div>
 
     <nav class="sidebar-nav">
@@ -39,10 +39,16 @@
 
       <div class="nav-label" style="margin-top: 20px">REPOSITORIES</div>
 
-      <div class="repo-item-single">
-        <span class="repo-dot" style="background:#3fb950"></span>
-        <span class="repo-name">{{ repoName }}</span>
-        <span class="nav-count">{{ openCount }}</span>
+      <div
+        class="repo-item-single"
+        *ngFor="let repo of pinnedRepos"
+        [class.active]="repo === selectedRepo"
+        (click)="selectRepo(repo)">
+        <span class="repo-dot"
+          [style.background]="repo === selectedRepo ? '#4da6ff' : '#3fb950'">
+        </span>
+        <span class="repo-name">{{ repo }}</span>
+        <span class="nav-count" *ngIf="repo === selectedRepo">{{ openCount }}</span>
       </div>
 
     </nav>
@@ -88,7 +94,7 @@
       <!-- ── LOADING / ERROR ── -->
       <div class="loading-state" *ngIf="isLoadingRepo && isLoadingIssues">
         <div class="spinner"></div>
-        Loading Developer-Hub...
+        Loading {{ selectedRepo }}...
       </div>
 
       <div class="error-state" *ngIf="loadError && !isLoadingRepo">

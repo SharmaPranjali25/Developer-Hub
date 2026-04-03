@@ -52,6 +52,10 @@
   font-weight: 600;
   font-size: 14px;
   color: #e8f0ff;
+  border: 1px solid #f5c518;
+  background: #0d1426;
+  border-radius: 6px;
+  padding: 2px 8px;
 }
 
 .logo-beta {
@@ -131,6 +135,25 @@
   background: #141c30;
   border: 1px solid #2a3a5c;
   margin-top: 4px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+
+  &:hover {
+    background: #1a2540;
+    border-color: #4da6ff;
+
+    .repo-name { color: #cdd9f5; }
+  }
+
+  &.active {
+    background: #141c30;
+    border-color: #f5c518;
+
+    .repo-name {
+      color: #4da6ff;
+      font-weight: 600;
+    }
+  }
 }
 
 .repo-dot {
