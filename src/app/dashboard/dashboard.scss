@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════
-//  Dev Hub Dashboard — Single Repo Mode
+//  Dev Hub Dashboard — Dark Blue Theme
 // ═══════════════════════════════════════════
 
 :host { display: block; height: 100vh; }
@@ -8,18 +8,18 @@
 .app-shell {
   display: flex;
   height: 100vh;
-  background: #f6f8fa;
+  background: #0a0f1e;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 13px;
-  color: #1c2128;
+  color: #cdd9f5;
 }
 
 // ── Sidebar ─────────────────────────────────
 .sidebar {
   width: 200px;
   min-width: 200px;
-  background: #fff;
-  border-right: 1px solid #d0d7de;
+  background: #0d1426;
+  border-right: 1px solid #f5c518;
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -31,14 +31,14 @@
   align-items: center;
   gap: 8px;
   padding: 16px 16px 12px;
-  border-bottom: 1px solid #d0d7de;
+  border-bottom: 1px solid #f5c518;
 }
 
 .logo-icon {
   width: 28px;
   height: 28px;
-  background: #1c2128;
-  color: #fff;
+  background: #4da6ff;
+  color: #0a0f1e;
   border-radius: 6px;
   font-size: 11px;
   font-weight: 700;
@@ -51,14 +51,14 @@
 .logo-text {
   font-weight: 600;
   font-size: 14px;
-  color: #1c2128;
+  color: #e8f0ff;
 }
 
 .logo-beta {
   font-size: 10px;
-  color: #6e7781;
-  background: #f6f8fa;
-  border: 1px solid #d0d7de;
+  color: #f5c518;
+  background: #1a1f30;
+  border: 1px solid #f5c518;
   border-radius: 10px;
   padding: 1px 6px;
 }
@@ -71,7 +71,7 @@
 .nav-label {
   font-size: 10px;
   font-weight: 600;
-  color: #6e7781;
+  color: #5a7ab5;
   letter-spacing: 0.06em;
   padding: 4px 8px;
   margin-top: 4px;
@@ -85,16 +85,17 @@
   padding: 6px 8px;
   border-radius: 6px;
   cursor: pointer;
-  color: #24292f;
+  color: #a0b8e0;
   font-weight: 400;
   transition: background 0.12s;
 
-  &:hover { background: #f6f8fa; }
+  &:hover { background: #141c30; }
 
   &.active {
-    background: #f6f8fa;
+    background: #141c30;
     font-weight: 600;
-    color: #1c2128;
+    color: #4da6ff;
+    border-left: 2px solid #f5c518;
   }
 }
 
@@ -102,23 +103,23 @@
   font-size: 14px;
   width: 16px;
   text-align: center;
-  color: #57606a;
+  color: #5a7ab5;
 }
 
 .nav-count {
   margin-left: auto;
   font-size: 11px;
-  background: #f6f8fa;
-  border: 1px solid #d0d7de;
+  background: #141c30;
+  border: 1px solid #2a3a5c;
   border-radius: 10px;
   padding: 1px 6px;
-  color: #57606a;
+  color: #7a9cc8;
   font-weight: 600;
   min-width: 20px;
   text-align: center;
 
-  &--red { background: #ffebe9; border-color: #ffcecb; color: #cf222e; }
-  &--blue { background: #ddf4ff; border-color: #b6e3ff; color: #0969da; }
+  &--red { background: #2a0d0d; border-color: #f5c518; color: #f5c518; }
+  &--blue { background: #0d1f3a; border-color: #4da6ff; color: #4da6ff; }
 }
 
 .repo-item-single {
@@ -127,7 +128,8 @@
   gap: 8px;
   padding: 6px 8px;
   border-radius: 6px;
-  background: #f6f8fa;
+  background: #141c30;
+  border: 1px solid #2a3a5c;
   margin-top: 4px;
 }
 
@@ -141,7 +143,7 @@
 .repo-name {
   font-size: 12px;
   font-weight: 500;
-  color: #1c2128;
+  color: #cdd9f5;
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -153,7 +155,7 @@
   align-items: center;
   gap: 8px;
   padding: 12px 12px 16px;
-  border-top: 1px solid #d0d7de;
+  border-top: 1px solid #f5c518;
   margin-top: auto;
 }
 
@@ -162,13 +164,14 @@
   height: 24px;
   border-radius: 50%;
   object-fit: cover;
+  border: 1px solid #f5c518;
 }
 
 .user-name {
   flex: 1;
   font-size: 12px;
   font-weight: 500;
-  color: #24292f;
+  color: #cdd9f5;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -178,11 +181,11 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #57606a;
+  color: #5a7ab5;
   font-size: 14px;
   padding: 2px 4px;
   border-radius: 4px;
-  &:hover { background: #f6f8fa; color: #cf222e; }
+  &:hover { background: #1a1f30; color: #f5c518; }
 }
 
 // ── Main content ────────────────────────────
@@ -199,8 +202,8 @@
   justify-content: space-between;
   padding: 0 24px;
   height: 52px;
-  background: #fff;
-  border-bottom: 1px solid #d0d7de;
+  background: #0d1426;
+  border-bottom: 1px solid #f5c518;
   flex-shrink: 0;
 }
 
@@ -211,15 +214,15 @@
   font-size: 13px;
 }
 
-.topbar-org { color: #0969da; font-weight: 500; }
-.topbar-sep { color: #6e7781; }
-.topbar-page { color: #1c2128; font-weight: 600; }
+.topbar-org { color: #4da6ff; font-weight: 500; }
+.topbar-sep { color: #3a5280; }
+.topbar-page { color: #e8f0ff; font-weight: 600; }
 
 .auth-badge {
   font-size: 11px;
-  color: #1a7f37;
-  background: #dafbe1;
-  border: 1px solid #aceebb;
+  color: #4da6ff;
+  background: #0d1f3a;
+  border: 1px solid #4da6ff;
   border-radius: 10px;
   padding: 2px 8px;
   margin-left: 8px;
@@ -234,8 +237,8 @@
 .search-box {
   display: flex;
   align-items: center;
-  background: #f6f8fa;
-  border: 1px solid #d0d7de;
+  background: #141c30;
+  border: 1px solid #2a3a5c;
   border-radius: 6px;
   padding: 5px 10px;
   gap: 6px;
@@ -243,14 +246,14 @@
   transition: border-color 0.15s;
 
   &:focus-within {
-    border-color: #0969da;
-    background: #fff;
-    box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.1);
+    border-color: #f5c518;
+    background: #0d1426;
+    box-shadow: 0 0 0 3px rgba(245, 197, 24, 0.15);
   }
 }
 
 .search-icon {
-  color: #6e7781;
+  color: #5a7ab5;
   font-size: 15px;
 }
 
@@ -260,8 +263,8 @@
   font-size: 12px;
   outline: none;
   width: 100%;
-  color: #1c2128;
-  &::placeholder { color: #6e7781; }
+  color: #cdd9f5;
+  &::placeholder { color: #3a5280; }
 }
 
 .user-avatar-sm img {
@@ -269,7 +272,7 @@
   height: 28px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid #d0d7de;
+  border: 1px solid #f5c518;
 }
 
 // ── Content ──────────────────────────────────
@@ -284,23 +287,23 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0;
-  border: 1px solid #d0d7de;
+  border: 1px solid #f5c518;
   border-radius: 6px;
-  background: #fff;
+  background: #0d1426;
   overflow: hidden;
   margin-bottom: 24px;
 }
 
 .stat-card {
   padding: 20px 24px;
-  border-right: 1px solid #d0d7de;
+  border-right: 1px solid #1e2d4a;
 
   &:last-child { border-right: none; }
 }
 
 .stat-label {
   font-size: 12px;
-  color: #57606a;
+  color: #5a7ab5;
   font-weight: 500;
   margin-bottom: 6px;
 }
@@ -308,14 +311,14 @@
 .stat-value {
   font-size: 32px;
   font-weight: 300;
-  color: #1c2128;
+  color: #e8f0ff;
   line-height: 1;
   margin-bottom: 6px;
 }
 
 .stat-sub {
   font-size: 11px;
-  color: #57606a;
+  color: #5a7ab5;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -325,17 +328,17 @@
 .dot {
   font-size: 10px;
 
-  &--green { color: #1a7f37; }
-  &--blue  { color: #0969da; }
-  &--purple{ color: #8250df; }
-  &--orange{ color: #bc4c00; }
-  &--yellow{ color: #9a6700; }
+  &--green  { color: #3fb950; }
+  &--blue   { color: #4da6ff; }
+  &--purple { color: #b083f0; }
+  &--orange { color: #f5c518; }
+  &--yellow { color: #f5c518; }
 }
 
 // ── Issues section ───────────────────────────
 .issues-section {
-  background: #fff;
-  border: 1px solid #d0d7de;
+  background: #0d1426;
+  border: 1px solid #f5c518;
   border-radius: 6px;
   overflow: hidden;
 }
@@ -345,20 +348,20 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px 12px;
-  border-bottom: 1px solid #d0d7de;
+  border-bottom: 1px solid #1e2d4a;
 }
 
 .section-title {
   font-weight: 600;
   font-size: 14px;
-  color: #1c2128;
+  color: #e8f0ff;
 }
 
 .view-all-link {
   font-size: 12px;
-  color: #0969da;
+  color: #4da6ff;
   text-decoration: none;
-  &:hover { text-decoration: underline; }
+  &:hover { text-decoration: underline; color: #f5c518; }
 }
 
 // ── Filter bar ───────────────────────────────
@@ -367,8 +370,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 8px 16px;
-  border-bottom: 1px solid #d0d7de;
-  background: #f6f8fa;
+  border-bottom: 1px solid #1e2d4a;
+  background: #0a0f1e;
 }
 
 .filter-tabs {
@@ -385,23 +388,24 @@
   background: transparent;
   border-radius: 6px;
   font-size: 12px;
-  color: #57606a;
+  color: #5a7ab5;
   cursor: pointer;
   font-weight: 400;
   transition: background 0.12s, color 0.12s;
 
-  &:hover { background: #e8ecef; color: #1c2128; }
+  &:hover { background: #141c30; color: #cdd9f5; }
 
   &.active {
-    background: #fff;
-    color: #1c2128;
+    background: #0d1426;
+    color: #4da6ff;
     font-weight: 600;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border: 1px solid #f5c518;
+    box-shadow: none;
   }
 }
 
 .tab-count {
-  color: #6e7781;
+  color: #3a5280;
   font-weight: 400;
 }
 
@@ -412,20 +416,20 @@
 
 .filter-action-btn {
   background: none;
-  border: 1px solid #d0d7de;
+  border: 1px solid #2a3a5c;
   border-radius: 6px;
   padding: 4px 10px;
   font-size: 12px;
-  color: #24292f;
+  color: #a0b8e0;
   cursor: pointer;
   font-weight: 500;
-  transition: background 0.12s;
-  &:hover { background: #f3f4f6; }
+  transition: background 0.12s, border-color 0.12s;
+  &:hover { background: #141c30; border-color: #f5c518; color: #f5c518; }
 }
 
 // ── Issue rows ───────────────────────────────
 .issue-list {
-  divide-y: 1px solid #d0d7de;
+  divide-y: 1px solid #1e2d4a;
 }
 
 .issue-row {
@@ -433,10 +437,10 @@
   align-items: flex-start;
   gap: 12px;
   padding: 14px 20px;
-  border-bottom: 1px solid #f6f8fa;
+  border-bottom: 1px solid #111827;
   transition: background 0.1s;
 
-  &:hover { background: #f6f8fa; }
+  &:hover { background: #111827; }
   &:last-child { border-bottom: none; }
 }
 
@@ -445,9 +449,9 @@
   margin-top: 1px;
   flex-shrink: 0;
 
-  &.dot--green  { color: #1a7f37; }
-  &.dot--purple { color: #8250df; }
-  &.dot--blue   { color: #0969da; }
+  &.dot--green  { color: #3fb950; }
+  &.dot--purple { color: #b083f0; }
+  &.dot--blue   { color: #4da6ff; }
 }
 
 .issue-main {
@@ -466,9 +470,9 @@
 .issue-title {
   font-size: 13px;
   font-weight: 500;
-  color: #1c2128;
+  color: #cdd9f5;
   text-decoration: none;
-  &:hover { color: #0969da; }
+  &:hover { color: #4da6ff; }
 }
 
 .issue-label {
@@ -476,15 +480,15 @@
   font-weight: 500;
   padding: 2px 7px;
   border-radius: 10px;
-  background: #ddf4ff;
-  color: #0550ae;
-  border: 1px solid #b6e3ff;
+  background: #0d1f3a;
+  color: #4da6ff;
+  border: 1px solid #4da6ff;
   white-space: nowrap;
 }
 
 .issue-meta {
   font-size: 11px;
-  color: #6e7781;
+  color: #3a5280;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -492,9 +496,9 @@
 }
 
 .review-badge {
-  background: #fff8c5;
-  color: #9a6700;
-  border: 1px solid #e3b341;
+  background: #1a1400;
+  color: #f5c518;
+  border: 1px solid #f5c518;
   border-radius: 10px;
   padding: 1px 7px;
   font-size: 10px;
@@ -506,7 +510,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #6e7781;
+  color: #3a5280;
   font-size: 11px;
 }
 
@@ -517,21 +521,21 @@
 // ── Load more ────────────────────────────────
 .load-more-wrap {
   padding: 16px 20px;
-  border-top: 1px solid #d0d7de;
+  border-top: 1px solid #1e2d4a;
   text-align: center;
 }
 
 .load-more-btn {
-  background: #f6f8fa;
-  border: 1px solid #d0d7de;
+  background: #141c30;
+  border: 1px solid #f5c518;
   border-radius: 6px;
   padding: 6px 20px;
   font-size: 12px;
   font-weight: 500;
-  color: #24292f;
+  color: #f5c518;
   cursor: pointer;
   transition: background 0.12s;
-  &:hover { background: #e8ecef; }
+  &:hover { background: #1a1f30; }
 }
 
 // ── Loading / Error ──────────────────────────
@@ -540,7 +544,7 @@
   align-items: center;
   gap: 12px;
   padding: 40px;
-  color: #6e7781;
+  color: #5a7ab5;
   font-size: 14px;
 }
 
@@ -549,16 +553,16 @@
   align-items: center;
   gap: 8px;
   padding: 20px;
-  color: #6e7781;
+  color: #5a7ab5;
   font-size: 13px;
 }
 
 .error-state {
-  background: #ffebe9;
-  border: 1px solid #ff8182;
+  background: #1a0f00;
+  border: 1px solid #f5c518;
   border-radius: 6px;
   padding: 14px 18px;
-  color: #cf222e;
+  color: #f5c518;
   font-size: 13px;
   margin-bottom: 16px;
 }
@@ -566,7 +570,7 @@
 .empty-state {
   padding: 32px 20px;
   text-align: center;
-  color: #6e7781;
+  color: #3a5280;
   font-size: 13px;
 }
 
@@ -574,8 +578,8 @@
 .spinner {
   width: 18px;
   height: 18px;
-  border: 2px solid #d0d7de;
-  border-top-color: #0969da;
+  border: 2px solid #1e2d4a;
+  border-top-color: #4da6ff;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 
